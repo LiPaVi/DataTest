@@ -14,7 +14,6 @@ public class HumanData {
     public static void main(String[] args) throws Exception{
         String fileRepository = "src/main/resources/";
         int rowNum = readRowNum();
-
         String[] names = new String[rowNum],
                 patronymics = new String[rowNum],
                 dates = new String[rowNum],
@@ -29,10 +28,8 @@ public class HumanData {
                 cities = new String[rowNum],
                 streets = new String[rowNum],
                 surnames = new String[rowNum];
-
         int daysInYear = 365;
         int hundredYearsInDays = 100 * daysInYear;
-
         ArrayList<String> femaleNamesList = getArrayFromFile(fileRepository + "FemaleNames.txt");
         ArrayList<String> maleNamesList = getArrayFromFile(fileRepository + "MaleNames.txt");
         ArrayList<String> surnamesList = getArrayFromFile(fileRepository + "Surnames.txt");
@@ -43,6 +40,7 @@ public class HumanData {
         ArrayList<String> regionsList = getArrayFromFile(fileRepository + "Regions.txt");
         ArrayList<String> hometownsList = getArrayFromFile(fileRepository + "Cities.txt");
 
+        // генерим массивы с рандомными данными
         for (int i = 0; i < rowNum; i++){
             int randomCountOfDays = randomNumber(hundredYearsInDays);
             dates[i] = getData(randomCountOfDays);
@@ -69,13 +67,7 @@ public class HumanData {
         }
 
         HSSFWorkbook workBook = new HSSFWorkbook();
-        HSSFSheet sheet = workBook.createSheet("Тестовые данные");
-        int i =0;
-        while (i <= rowNum) {
-            sheet.createRow(i);
-            i++;
-        }
-
+        HSSFSheet sheet = createSheet(workBook, rowNum);
         String[] columns  = {
                 "Имя",
                 "Фамилия",
@@ -92,7 +84,6 @@ public class HumanData {
                 "Дом",
                 "Квартира"
         };
-
         String[][] allData = {
                 names,
                 surnames,
@@ -109,16 +100,10 @@ public class HumanData {
                 houses,
                 flats
         };
-
         for (int columnIndex = 0; columnIndex < columns.length; columnIndex++){
             fillTheColumn(sheet, rowNum, columnIndex, allData[columnIndex], columns[columnIndex]);
         }
-
-        File file = new File(fileRepository + "data.xls");
-        FileOutputStream outFile = new FileOutputStream(file);
-        workBook.write(outFile);
-        System.out.println("Файл создан. Путь: " + file.getAbsolutePath());
-        workBook.close();
+        writeToExcel(fileRepository, workBook);
     }
 
     private static int readRowNum(){
@@ -189,5 +174,23 @@ public class HumanData {
             newArray[i] = originArray.get(randomNumber(originArray.size() - 1));
         }
         return newArray;
+    }
+
+    private static void writeToExcel(String fileRepository, HSSFWorkbook workBook) throws Exception {
+        File file = new File(fileRepository + "data.xls");
+        FileOutputStream outFile = new FileOutputStream(file);
+        workBook.write(outFile);
+        System.out.println("Файл создан. Путь: " + file.getAbsolutePath());
+        workBook.close();
+    }
+
+    private static HSSFSheet createSheet(HSSFWorkbook workBook, int rowNum){
+        HSSFSheet sheet = workBook.createSheet("Тестовые данные");
+        int i =0;
+        while (i <= rowNum) {
+            sheet.createRow(i);
+            i++;
+        }
+        return sheet;
     }
 }
