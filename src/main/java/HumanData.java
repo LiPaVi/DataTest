@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class HumanData {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         String fileRepository = "src/main/resources/";
         int rowNum = readRowNum();
         String[] names = new String[rowNum],
@@ -41,7 +41,7 @@ public class HumanData {
         ArrayList<String> hometownsList = getArrayFromFile(fileRepository + "Cities.txt");
 
         // генерим массивы с рандомными данными
-        for (int i = 0; i < rowNum; i++){
+        for (int i = 0; i < rowNum; i++) {
             int randomCountOfDays = randomNumber(hundredYearsInDays);
             dates[i] = getData(randomCountOfDays);
             ages[i] = getAge(randomCountOfDays, daysInYear);
@@ -49,7 +49,7 @@ public class HumanData {
             countries[i] = "Россия";
             houses[i] = Integer.toString(randomNumber(300));
             flats[i] = Integer.toString(randomNumber(300));
-            if(randomNumber(2) == 1){
+            if (randomNumber(2) == 1) {
                 sexes[i] = "MУЖ";
                 names[i] = maleNamesList.get(randomNumber(maleNamesList.size() - 1));
                 surnames[i] = surnamesList.get(randomNumber(surnamesList.size() - 1));
@@ -68,7 +68,7 @@ public class HumanData {
 
         HSSFWorkbook workBook = new HSSFWorkbook();
         HSSFSheet sheet = createSheet(workBook, rowNum);
-        String[] columns  = {
+        String[] columns = {
                 "Имя",
                 "Фамилия",
                 "Отчество",
@@ -100,23 +100,22 @@ public class HumanData {
                 houses,
                 flats
         };
-        for (int columnIndex = 0; columnIndex < columns.length; columnIndex++){
+        for (int columnIndex = 0; columnIndex < columns.length; columnIndex++) {
             fillTheColumn(sheet, rowNum, columnIndex, allData[columnIndex], columns[columnIndex]);
         }
         writeToExcel(fileRepository, workBook);
     }
 
-    private static int readRowNum(){
+    private static int readRowNum() {
         Scanner in = new Scanner(System.in);
         int rowNum = 0;
         System.out.print("Введите число от 1 до 30: ");
         try {
             rowNum = in.nextInt();
-        }
-        catch (InputMismatchException e){
+        } catch (InputMismatchException e) {
             System.out.println("Ошибка! Неверные входные данные!");
         }
-        if (rowNum < 1 || rowNum > 30){
+        if (rowNum < 1 || rowNum > 30) {
             System.out.println("Ваше число не соответствует условию." +
                     "\nБудет автоматически сгенерирован файл из одной строки.");
             rowNum = 1;
@@ -125,11 +124,11 @@ public class HumanData {
         return rowNum;
     }
 
-    private static int randomNumber(int max){
+    private static int randomNumber(int max) {
         return (int) (Math.random() * max);
     }
 
-    private static void fillTheColumn(HSSFSheet sheet, int rowNum, int columnNum, String[] array, String columnName){
+    private static void fillTheColumn(HSSFSheet sheet, int rowNum, int columnNum, String[] array, String columnName) {
         String cellValue;
         Cell cell;
         Row row;
@@ -138,7 +137,7 @@ public class HumanData {
         cell.setCellValue(columnName);
         int i = 1;
         while (i <= rowNum) {
-            cellValue = array[i-1];
+            cellValue = array[i - 1];
             row = sheet.getRow(i);
             cell = row.createCell(columnNum, CellType.STRING);
             cell.setCellValue(cellValue);
@@ -146,31 +145,31 @@ public class HumanData {
         }
     }
 
-    private static ArrayList<String> getArrayFromFile(String path) throws Exception{
+    private static ArrayList<String> getArrayFromFile(String path) throws Exception {
         ArrayList<String> array = new ArrayList<String>();
         FileReader cityFile = new FileReader(path);
         Scanner scan = new Scanner(cityFile);
-        while (scan.hasNextLine()){
+        while (scan.hasNextLine()) {
             array.add(scan.nextLine());
         }
         cityFile.close();
         return array;
     }
 
-    private static String getData(int days){
+    private static String getData(int days) {
         Calendar date = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        date.add(Calendar.DAY_OF_MONTH, - days);
+        date.add(Calendar.DAY_OF_MONTH, -days);
         return dateFormat.format(date.getTime());
     }
 
-    private static String getAge(int daysSinceBirth, int daysInYear){
+    private static String getAge(int daysSinceBirth, int daysInYear) {
         return Integer.toString(daysSinceBirth / daysInYear);
     }
 
-    private static String[] getRandomArray(ArrayList<String> originArray, int newArrayLength){
+    private static String[] getRandomArray(ArrayList<String> originArray, int newArrayLength) {
         String[] newArray = new String[newArrayLength];
-        for (int i = 0; i < newArrayLength; i ++) {
+        for (int i = 0; i < newArrayLength; i++) {
             newArray[i] = originArray.get(randomNumber(originArray.size() - 1));
         }
         return newArray;
@@ -184,9 +183,9 @@ public class HumanData {
         workBook.close();
     }
 
-    private static HSSFSheet createSheet(HSSFWorkbook workBook, int rowNum){
+    private static HSSFSheet createSheet(HSSFWorkbook workBook, int rowNum) {
         HSSFSheet sheet = workBook.createSheet("Тестовые данные");
-        int i =0;
+        int i = 0;
         while (i <= rowNum) {
             sheet.createRow(i);
             i++;
