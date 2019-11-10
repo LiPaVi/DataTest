@@ -14,20 +14,17 @@ public class HumanData {
     public static void main(String[] args) throws Exception{
         int rowNum = readRowNum();
 
-        ArrayList<String> names = new ArrayList<String>();
-        ArrayList<String> patronymics = new ArrayList<String>();
-        ArrayList<String> dates = new ArrayList<String>();
-        ArrayList<String> ages = new ArrayList<String>();
-        ArrayList<String> index = new ArrayList<String>();
-        ArrayList<String> countries = new ArrayList<String>();
-        ArrayList<String> houses = new ArrayList<String>();
-        ArrayList<String> flats = new ArrayList<String>();
-        ArrayList<String> sexes = new ArrayList<String>();
-
+        ArrayList<String> names = new ArrayList<String>(),
+                patronymics = new ArrayList<String>(),
+                dates = new ArrayList<String>(),
+                ages = new ArrayList<String>(),
+                index = new ArrayList<String>(),
+                countries = new ArrayList<String>(),
+                houses = new ArrayList<String>(),
+                flats = new ArrayList<String>(),
+                sexes = new ArrayList<String>();
         int daysInYear = 365;
         int hundredYearsInDays = 100 * daysInYear;
-
-
 
         ArrayList<String> femaleNames = getArrayFromFile("src/main/resources/FemaleNames.txt");
         ArrayList<String> maleNames = getArrayFromFile("src/main/resources/MaleNames.txt");
@@ -40,13 +37,12 @@ public class HumanData {
 
         for (int i = 0; i < rowNum; i++){
             int randomCountOfDays = randomNumber(hundredYearsInDays);
-            dates.add(i, getRandomData(randomCountOfDays));
+            dates.add(i, getData(randomCountOfDays));
             ages.add(i, getAge(randomCountOfDays, daysInYear));
             index.add(i, Integer.toString(100000 + randomNumber(899999)));
             countries.add(i, "Россия");
             houses.add(i, Integer.toString(randomNumber(300)));
             flats.add(i, Integer.toString(randomNumber(300)));
-
             if(randomNumber(2) == 1){
                 sexes.add(i, "MУЖ");
                 names.add(i, maleNames.get(randomNumber(maleNames.size())));
@@ -58,7 +54,6 @@ public class HumanData {
                 surnames.add(i, surnames.get(randomNumber(surnames.size())) + "а");
                 patronymics.add(i, femalePatronymic.get(randomNumber(femalePatronymic.size())));
             }
-
         }
 
         HSSFWorkbook workBook = new HSSFWorkbook();
@@ -68,7 +63,6 @@ public class HumanData {
             sheet.createRow(i);
             i++;
         }
-
 
         fillTheColumn(sheet, rowNum, 0, names, "Имя");
         fillTheColumn(sheet, rowNum, 1, surnames, "Фамилия");
@@ -91,7 +85,7 @@ public class HumanData {
         workBook.close();
     }
 
-    public static int readRowNum(){
+    private static int readRowNum(){
         Scanner in = new Scanner(System.in);
         int rowNum = 0;
         System.out.print("Введите число от 1 до 30: ");
@@ -101,7 +95,6 @@ public class HumanData {
         catch (InputMismatchException e){
             System.out.println("Ошибка! Неверные входные данные!");
         }
-
         if (rowNum < 1 || rowNum > 30){
             System.out.println("Ваше число не соответствует условию." +
                     "\nБудет автоматически сгенерирован файл из одной строки.");
@@ -115,7 +108,7 @@ public class HumanData {
         return (int) (Math.random() * max);
     }
 
-    public static void fillTheColumnWithRandom(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
+    private static void fillTheColumnWithRandom(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
         String cellValue;
         Cell cell;
         Row row;
@@ -132,7 +125,7 @@ public class HumanData {
         }
     }
 
-    public static void fillTheColumn(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
+    private static void fillTheColumn(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
         String cellValue;
         Cell cell;
         Row row;
@@ -149,7 +142,7 @@ public class HumanData {
         }
     }
 
-    public static ArrayList<String> getArrayFromFile(String path) throws Exception{
+    private static ArrayList<String> getArrayFromFile(String path) throws Exception{
         ArrayList<String> array = new ArrayList<String>();
         FileReader cityFile = new FileReader(path);
         Scanner scan = new Scanner(cityFile);
@@ -160,16 +153,14 @@ public class HumanData {
         return array;
     }
 
-    public static String getRandomData(int random){
+    private static String getData(int days){
         Calendar date = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        int randomDays = random;
-        date.add(Calendar.DAY_OF_MONTH, -randomDays);
+        date.add(Calendar.DAY_OF_MONTH, - days);
         return dateFormat.format(date.getTime());
     }
 
-    public static String getAge(int daysSinceBirth, int daysInYear){
+    private static String getAge(int daysSinceBirth, int daysInYear){
         return Integer.toString(daysSinceBirth / daysInYear);
     }
-
 }
