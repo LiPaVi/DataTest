@@ -1,43 +1,32 @@
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class HumanData {
     public static void main(String[] args) throws Exception{
+        int rowNum = readRowNum();
 
+        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<String> patronymics = new ArrayList<String>();
+        ArrayList<String> dates = new ArrayList<String>();
+        ArrayList<String> ages = new ArrayList<String>();
+        ArrayList<String> index = new ArrayList<String>();
+        ArrayList<String> countries = new ArrayList<String>();
+        ArrayList<String> houses = new ArrayList<String>();
+        ArrayList<String> flats = new ArrayList<String>();
+        ArrayList<String> sexes = new ArrayList<String>();
 
-        Scanner in = new Scanner(System.in);
-        System.out.print("Введите число от 1 до 30: ");
-        int rownum = in.nextInt();
-        in.close();
+        int daysInYear = 365;
+        int hundredYearsInDays = 100 * daysInYear;
 
-//        boolean sex;
-//
-//        String names[];
-//        String surnames[];
-//        String patronymic[];
-//
-//        Date birth;
-//        int age;
-//
-//        int index;
-//        String country = "Россия";
-//        String streets[];
-//        int houseNumber;
-//        int flatNumber;
-
-//        Struct Human;
 
 
         ArrayList<String> femaleNames = getArrayFromFile("src/main/resources/FemaleNames.txt");
@@ -47,85 +36,140 @@ public class HumanData {
         ArrayList<String> malePatronymic = getArrayFromFile("src/main/resources/MalePatronymic.txt");
         ArrayList<String> streets = getArrayFromFile("src/main/resources/Streets.txt");
         ArrayList<String> cities = getArrayFromFile("src/main/resources/Cities.txt");
+        ArrayList<String> regions = getArrayFromFile("src/main/resources/Regions.txt");
 
+        for (int i = 0; i < rowNum; i++){
+            int randomCountOfDays = randomNumber(hundredYearsInDays);
+            dates.add(i, getRandomData(randomCountOfDays));
+            ages.add(i, getAge(randomCountOfDays, daysInYear));
+            index.add(i, Integer.toString(100000 + randomNumber(899999)));
+            countries.add(i, "Россия");
+            houses.add(i, Integer.toString(randomNumber(300)));
+            flats.add(i, Integer.toString(randomNumber(300)));
 
+            if(randomNumber(2) == 1){
+                sexes.add(i, "MУЖ");
+                names.add(i, maleNames.get(randomNumber(maleNames.size())));
+                surnames.add(i, surnames.get(randomNumber(surnames.size())));
+                patronymics.add(i, malePatronymic.get(randomNumber(malePatronymic.size())));
+            } else {
+                sexes.add(i, "ЖЕН");
+                names.add(i, femaleNames.get(randomNumber(femaleNames.size())));
+                surnames.add(i, surnames.get(randomNumber(surnames.size())) + "а");
+                patronymics.add(i, femalePatronymic.get(randomNumber(femalePatronymic.size())));
+            }
+
+        }
 
         HSSFWorkbook workBook = new HSSFWorkbook();
         HSSFSheet sheet = workBook.createSheet("Тестовые данные");
-
-        // создаем шрифт
-        HSSFFont font = workBook.createFont();
-        // указываем, что хотим его видеть жирным
-        font.setBold(true);
-        // создаем стиль для ячейки
-        HSSFCellStyle style = workBook.createCellStyle();
-        // и применяем к этому стилю жирный шрифт
-        style.setFont(font);
-
         int i =0;
-
-        while (i <= rownum) {
+        while (i <= rowNum) {
             sheet.createRow(i);
             i++;
         }
 
 
-        fillTheColumn(sheet, rownum, 0, maleNames, "Имя");
-        fillTheColumn(sheet, rownum, 1, surnames, "Фамилия");
-        fillTheColumn(sheet, rownum, 2, malePatronymic, "Отчество");
-        fillTheColumn(sheet, rownum, 3, cities, "Город");
-        fillTheColumn(sheet, rownum, 4, streets, "Улица");
-
-        // Создаем файл
+        fillTheColumn(sheet, rowNum, 0, names, "Имя");
+        fillTheColumn(sheet, rowNum, 1, surnames, "Фамилия");
+        fillTheColumn(sheet, rowNum, 2, patronymics, "Отчество");
+        fillTheColumn(sheet, rowNum, 3, ages, "Возраст");
+        fillTheColumn(sheet, rowNum, 4, sexes, "Пол");
+        fillTheColumn(sheet, rowNum, 5, dates, "Дата рождения");
+        fillTheColumnWithRandom(sheet, rowNum, 6, cities, "Место рождения");
+        fillTheColumn(sheet, rowNum, 7, index, "Индекс");
+        fillTheColumn(sheet, rowNum, 8, countries, "Страна");
+        fillTheColumnWithRandom(sheet, rowNum, 9, regions, "Область");
+        fillTheColumnWithRandom(sheet, rowNum, 10, cities, "Город");
+        fillTheColumnWithRandom(sheet, rowNum, 11, streets, "Улица");
+        fillTheColumn(sheet, rowNum, 12, houses, "Дом");
+        fillTheColumn(sheet, rowNum, 13, flats, "Квартира");
         File file = new File("src/main/resources/data.xls");
-//        file.getParentFile().mkdirs();
-
         FileOutputStream outFile = new FileOutputStream(file);
         workBook.write(outFile);
         System.out.println("Файл создан. Путь: " + file.getAbsolutePath());
         workBook.close();
+    }
 
+    public static int readRowNum(){
+        Scanner in = new Scanner(System.in);
+        int rowNum = 0;
+        System.out.print("Введите число от 1 до 30: ");
+        try {
+            rowNum = in.nextInt();
+        }
+        catch (InputMismatchException e){
+            System.out.println("Ошибка! Неверные входные данные!");
+        }
+
+        if (rowNum < 1 || rowNum > 30){
+            System.out.println("Ваше число не соответствует условию." +
+                    "\nБудет автоматически сгенерирован файл из одной строки.");
+            rowNum = 1;
+        }
+        in.close();
+        return rowNum;
     }
 
     private static int randomNumber(int max){
         return (int) (Math.random() * max);
     }
 
-    private static void fillTheColumn(HSSFSheet sheet, int rownum, int columnnum, ArrayList<String> list, String columnName){
+    public static void fillTheColumnWithRandom(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
         String cellValue;
         Cell cell;
         Row row;
-
         row = sheet.getRow(0);
-        cell = row.createCell(columnnum, CellType.STRING);
+        cell = row.createCell(columnNum, CellType.STRING);
         cell.setCellValue(columnName);
-
         int i = 1;
-        while (i <= rownum) {
+        while (i <= rowNum) {
             cellValue = list.get(randomNumber(list.size()));
             row = sheet.getRow(i);
-            cell = row.createCell(columnnum, CellType.STRING);
+            cell = row.createCell(columnNum, CellType.STRING);
             cell.setCellValue(cellValue);
             i += 1;
         }
     }
 
-    private static ArrayList<String> getArrayFromFile(String path) throws Exception{
-        ArrayList<String> array = new ArrayList<String>();
+    public static void fillTheColumn(HSSFSheet sheet, int rowNum, int columnNum, ArrayList<String> list, String columnName){
+        String cellValue;
+        Cell cell;
+        Row row;
+        row = sheet.getRow(0);
+        cell = row.createCell(columnNum, CellType.STRING);
+        cell.setCellValue(columnName);
+        int i = 1;
+        while (i <= rowNum) {
+            cellValue = list.get(i-1);
+            row = sheet.getRow(i);
+            cell = row.createCell(columnNum, CellType.STRING);
+            cell.setCellValue(cellValue);
+            i += 1;
+        }
+    }
 
+    public static ArrayList<String> getArrayFromFile(String path) throws Exception{
+        ArrayList<String> array = new ArrayList<String>();
         FileReader cityFile = new FileReader(path);
         Scanner scan = new Scanner(cityFile);
-
         while (scan.hasNextLine()){
             array.add(scan.nextLine());
         }
-
         cityFile.close();
         return array;
     }
 
-    private static ArrayList<String> dates(int number){
-        ArrayList<String> array = new ArrayList<String>();
-        return array;
+    public static String getRandomData(int random){
+        Calendar date = new GregorianCalendar();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        int randomDays = random;
+        date.add(Calendar.DAY_OF_MONTH, -randomDays);
+        return dateFormat.format(date.getTime());
     }
+
+    public static String getAge(int daysSinceBirth, int daysInYear){
+        return Integer.toString(daysSinceBirth / daysInYear);
+    }
+
 }
